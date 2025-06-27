@@ -1,0 +1,214 @@
+{
+  "name": "Prompt Enhancer Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Your job is to analyze the user's query and determine the primary goal. Categorize it into one of the following: \n\n- `Image Generation` (for creating pictures, logos, art)\n- `Code Generation` (for writing software or scripts)\n- `Creative Writing` (for stories, poems, marketing copy)\n- `Factual Explanation` (for explaining concepts, summarizing text)\n- `General Task` (for anything else)\n\nUser Query: {{ $json.chatInput }}\n\nOutput ONLY the category name.",
+        "options": {}
+      },
+      "id": "e0b4e737-4729-45f4-89a6-4e5834d18a4d",
+      "name": "Goal Analyzer",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        820,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": [
+          {
+            "value1": "={{ $json.output }}",
+            "operation": "contains",
+            "value2": "Image Generation"
+          },
+          {
+            "value1": "={{ $json.output }}",
+            "operation": "contains",
+            "value2": "Code Generation"
+          },
+          {
+            "value1": "={{ $json.output }}",
+            "operation": "contains",
+            "value2": "Creative Writing"
+          },
+          {
+            "value1": "={{ $json.output }}",
+            "operation": "contains",
+            "value2": "Factual Explanation"
+          }
+        ],
+        "options": {}
+      },
+      "id": "3a9b8a7b-4e6c-4f3a-8e2d-9b1c2a3f4d5e",
+      "name": "Switch by Goal",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 2.1,
+      "position": [
+        1060,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=User Query: {{ $json.chatInput }}\n\nExpand this into a detailed prompt for an AI image generator. Include details about:\n- **Subject:** (The main focus of the image)\n- **Style:** (e.g., photorealistic, cartoon, watercolor, 3D render, anime)\n- **Composition:** (e.g., close-up, wide shot, portrait)\n- **Lighting:** (e.g., cinematic, soft light, neon)\n- **Mood:** (e.g., dramatic, cheerful, mysterious)\n- **Negative Prompts:** (What to avoid)",
+        "options": {
+          "systemMessage": "You are a creative assistant for an AI image generator. Your task is to convert a simple user idea into a rich, detailed prompt."
+        }
+      },
+      "id": "f1d2c3b4-a5e6-4f7a-8b9c-0d1e2f3a4b5c",
+      "name": "Image Prompt Enhancer",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1300,
+        -60
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=User Query: {{ $json.chatInput }}\n\nExpand this into a detailed prompt for an AI coding assistant. Specify:\n- **Language:** (The programming language to use)\n- **Core Logic:** (The main task the code should perform)\n- **Libraries/Frameworks:** (Any specific libraries to use or avoid)\n- **Input/Output:** (Expected inputs and desired output format)\n- **Error Handling:** (How the code should handle potential errors)",
+        "options": {
+          "systemMessage": "You are a senior software engineer. Your task is to create a detailed and unambiguous coding specification from a user's request."
+        }
+      },
+      "id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+      "name": "Code Prompt Enhancer",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1300,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=User Query: {{ $json.chatInput }}\n\nExpand this into a detailed prompt for a creative writing AI. Include:\n- **Format:** (e.g., short story, poem, marketing email, tweet thread)\n- **Topic:** (The core subject)\n- **Tone/Style:** (e.g., witty, formal, mysterious, humorous)\n- **Audience:** (Who is this for?)\n- **Key Elements:** (Specific things to include, like characters, plot points, or keywords)",
+        "options": {
+          "systemMessage": "You are a master storyteller and copywriter. Your task is to create an inspiring and detailed brief for a creative writing task."
+        }
+      },
+      "id": "b1c2d3e4-f5a6-4b7c-8d9e-1f2a3b4c5d6e",
+      "name": "Creative Writing Prompt Enhancer",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1300,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=User Query: {{ $json.chatInput }}\n\nExpand this into a detailed prompt for an AI designed to provide explanations. Include:\n- **Core Question:** (The specific question to be answered)\n- **Scope:** (Define the boundaries of the explanation)\n- **Audience Level:** (e.g., for a 5-year-old, a high school student, an expert)\n- **Format:** (e.g., simple paragraph, bullet points, step-by-step guide)\n- **Constraints:** (What to focus on or what to avoid)",
+        "options": {
+          "systemMessage": "You are an expert educator and researcher. Your task is to formulate a precise and comprehensive question to get the best possible explanation from an AI."
+        }
+      },
+      "id": "c1d2e3f4-a5b6-4c7d-8e9f-2a3b4c5d6e7f",
+      "name": "Factual Explanation Prompt Enhancer",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1300,
+        540
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=User Query: {{ $json.chatInput }}\n\nEnhance this query into a detailed, structured prompt. Use the following framework:\n- **Role:** (Define the persona the AI should adopt, e.g., 'You are a helpful assistant')\n- **Task:** (Clearly state the primary goal of the task)\n- **Instructions:** (Provide clear, step-by-step instructions or key points to include)\n- **Output Format:** (Specify how the output should be structured, e.g., Markdown, JSON, a simple list)",
+        "options": {
+          "systemMessage": "You are a prompt engineering expert. Your job is to add structure and clarity to a general user query to make it more effective for an AI."
+        }
+      },
+      "id": "d1e2f3a4-b5c6-4d7e-8f9a-3b4c5d6e7f8g",
+      "name": "General Task Prompt Enhancer",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1300,
+        740
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Goal Analyzer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Goal Analyzer": {
+      "main": [
+        [
+          {
+            "node": "Switch by Goal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch by Goal": {
+      "main": [
+        [
+          {
+            "node": "Image Prompt Enhancer",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code Prompt Enhancer",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Creative Writing Prompt Enhancer",
+            "type": "main",
+            "index": 2
+          }
+        ],
+        [
+          {
+            "node": "Factual Explanation Prompt Enhancer",
+            "type": "main",
+            "index": 3
+          }
+        ],
+        [
+          {
+            "node": "General Task Prompt Enhancer",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1.0",
+  "meta": {
+    "instanceId": "prompt-enhancer-gemini-1"
+  },
+  "id": "prompt-enhancer-workflow",
+  "tags": []
+}
